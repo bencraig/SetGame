@@ -9,7 +9,8 @@ import Foundation
 
 class SetGameViewModel : ObservableObject {
 
-    @Published private var gameModel = SetGame() //theme: createRandomTheme())
+    @Published private var gameModel = SetGame()
+    var showNoSetsAlert = false
 
     init() {
         newGame()
@@ -28,8 +29,14 @@ class SetGameViewModel : ObservableObject {
         gameModel.dealThreeCards()
     }
     
-    func dealButtonDisabled() -> Bool {
-        return gameModel.remainingDeck.isEmpty
+    func cheat() {
+        if !gameModel.highlightSet() {
+            showNoSetsAlert = true
+        }
+    }
+    
+    func dealButtonEnabled() -> Bool {
+        return gameModel.canDealCards()
     }
     
     var cards: Array<SetGame.Card> {

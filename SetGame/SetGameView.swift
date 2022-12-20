@@ -22,9 +22,13 @@ struct SetGameView: View {
             HStack {
                 newGame
                 Spacer()
+                cheat
+                Spacer()
                 dealThree
             }.padding(.horizontal)
-        }
+        }.alert(isPresented: $game.showNoSetsAlert, content: {
+            Alert(title: Text("No sets on screen."))
+        })
     }
     
     var newGame: some View {
@@ -39,6 +43,18 @@ struct SetGameView: View {
             }
         }
     }
+    var cheat: some View {
+        Button {
+            game.cheat()
+        } label: {
+            VStack {
+                Image(systemName: "graduationcap.circle")
+                    .font(.largeTitle)
+                Text("Cheat")
+                    .font(.body)
+            }
+        }
+    }
     var dealThree: some View {
         Button {
             game.dealThreeCards()
@@ -49,7 +65,7 @@ struct SetGameView: View {
                 Text("Deal Three")
                     .font(.body)
             }
-        }.disabled(game.dealButtonDisabled())
+        }.disabled(!game.dealButtonEnabled())
     }
 }
 

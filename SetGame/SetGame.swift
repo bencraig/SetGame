@@ -10,7 +10,7 @@ import Foundation
 struct SetGame { 
     
     private(set) var visibleCards: [Card]
-    private(set) var remainingDeck: [Card]
+    private var remainingDeck: [Card]
     private var cards: Array<Card>
     private var score: Int = 0
 
@@ -31,13 +31,13 @@ struct SetGame {
         }
         let selectedCards = visibleCards.filter{$0.isSelected}
         if selectedCards.count == 3 {
-            checkSet(selectedCards)
+            let _ = checkSet(selectedCards)
         }
     }
     
-    mutating func checkSet(_ selections: [Card]) {
+    mutating func checkSet(_ selections: [Card]) -> Bool {
         if selections.count != 3 {
-            return
+            return false
         }
         let c1 = selections[0]
         let c2 = selections[1]
@@ -48,16 +48,19 @@ struct SetGame {
         let shp = (c1.shape == c2.shape && c3.shape == c1.shape) || (c1.shape != c2.shape && c2.shape != c3.shape && c3.shape != c1.shape)
         let shd = (c1.shading == c2.shading && c3.shading == c1.shading) || (c1.shading != c2.shading && c2.shading != c3.shading && c3.shading != c1.shading)
         
+        var foundSet = false
         for card in selections {
             if let index = visibleCards.firstIndex(where:{$0.id == card.id}) {
                 if num && col && shp && shd {
                     visibleCards[index].isSet = true
+                    foundSet = true
                 } else {
                     visibleCards[index].isSet = false
                 }
                 visibleCards[index].isSelected = false
             }
         }
+        return foundSet
     }
     
     mutating func dealThreeCards() {
@@ -82,6 +85,35 @@ struct SetGame {
                 }
             }
         }
+    }
+    
+    mutating func highlightSet() -> Bool {
+        for card1 in visibleCards {
+            for card2 in visibleCards {
+                for card3 in visibleCards {
+                    if card1.id != card2.id && card2.id != card3.id && card1.id != card3.id {
+                        if checkSet([card1, card2, card3]) {
+                            return true
+                        } else {
+                            if let index1 = visibleCards.firstIndex(where:{$0.id == card1.id}) {
+                                visibleCards[index1].isSet = nil
+                            }
+                            if let index2 = visibleCards.firstIndex(where:{$0.id == card2.id}) {
+                                visibleCards[index2].isSet = nil
+                            }
+                            if let index3 = visibleCards.firstIndex(where:{$0.id == card3.id}) {
+                                visibleCards[index3].isSet = nil
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false
+    }
+    
+    func canDealCards() -> Bool {
+        return !remainingDeck.isEmpty
     }
     
     init () {
@@ -113,7 +145,7 @@ struct SetGame {
     }
         
     enum SetShape: CaseIterable{
-        case diamond, oval, rectangle //squiggle
+        case diamond, oval, rectangle 
     }
     
     enum SetShading: CaseIterable {

@@ -15,7 +15,7 @@ struct CardView: View {
             ZStack {
                 let shape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
                 shape.fill().foregroundColor(.white)
-                shape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
+                shape.strokeBorder(lineWidth: getLineWidth())
                     .padding(5).opacity(0.8).foregroundColor(borderColor())
 
                 shapeDesign().padding(.all)
@@ -33,11 +33,11 @@ struct CardView: View {
             ForEach(repeatedCount, id: \.self) { _ in
                 switch card.shape {
                 case .oval:
-                    Circle().strokeBorder(c,lineWidth: 3).background(Circle().fill(f))
+                    Circle().strokeBorder(c,lineWidth: DrawingConstants.lineWidth).background(Circle().fill(f))
                 case .diamond:
-                    Diamond().stroke(c, lineWidth:3).background(Diamond().fill(f))
+                    Diamond().stroke(c, lineWidth:DrawingConstants.lineWidth).background(Diamond().fill(f))
                 case .rectangle:
-                    RoundedRectangle(cornerRadius:DrawingConstants.cornerRadius).strokeBorder(c, lineWidth:3).background(RoundedRectangle(cornerRadius:DrawingConstants.cornerRadius).fill(f))
+                    RoundedRectangle(cornerRadius:DrawingConstants.cornerRadius).strokeBorder(c, lineWidth:DrawingConstants.lineWidth).background(RoundedRectangle(cornerRadius:DrawingConstants.cornerRadius).fill(f))
                 }
             }
         }
@@ -51,6 +51,14 @@ struct CardView: View {
             return shapeColor()
         case .striped:
             return shapeColor().opacity(0.5)
+        }
+    }
+    
+    private func getLineWidth() -> CGFloat {
+        if card.isSet == true {
+            return DrawingConstants.setLineWidth
+        } else {
+            return DrawingConstants.lineWidth
         }
     }
     
@@ -98,6 +106,7 @@ struct CardView: View {
     private struct DrawingConstants {
         static let cornerRadius: CGFloat = 10
         static let lineWidth: CGFloat = 3.0
+        static let setLineWidth: CGFloat = 5.0
         static let fontScale: CGFloat = 0.7
     }
 }
