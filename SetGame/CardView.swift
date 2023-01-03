@@ -20,6 +20,9 @@ struct CardView: View {
 
                 shapeDesign().padding(.all)
             }
+            .cardify(isFaceUp: card.isFaceUp)
+            .rotationEffect(Angle.degrees(card.isSet == true ? 360 : 0))
+            .rotationEffect(Angle.degrees(card.isSet == false ? 4 : 0))
         }
     }
     
@@ -55,7 +58,7 @@ struct CardView: View {
     }
     
     private func getLineWidth() -> CGFloat {
-        if card.isSet == true {
+        if card.isSet == true || card.isSelected {
             return DrawingConstants.setLineWidth
         } else {
             return DrawingConstants.lineWidth
@@ -86,7 +89,7 @@ struct CardView: View {
         }
     }
     
-    private func borderColor() -> Color {
+    private func borderColor() -> Color { 
         if card.isSet == true {
             return Color.blue.opacity(1)
         } else if card.isSet == false {
@@ -111,9 +114,15 @@ struct CardView: View {
     }
 }
 
+extension View {
+    func cardify(isFaceUp: Bool) -> some View {
+        self.modifier(Cardify(isFaceUp: isFaceUp))
+    }
+}
+
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-        CardView(card: SetGame.Card(number: SetGame.SetNumber.three, shape: SetGame.SetShape.rectangle, shading: SetGame.SetShading.open, color: SetGame.SetColor.red, id: 1))
+        CardView(card: SetGame.Card(number: SetNumber.three, shape: SetShape.rectangle, shading: SetShading.open, color: SetColor.red, id: 1))
     }
 }
 

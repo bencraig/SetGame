@@ -7,29 +7,27 @@
 
 import Foundation
 
-struct SetGame { 
+struct SetGame {
     
-    private(set) var visibleCards: [Card]
-    private var remainingDeck: [Card]
-    private var cards: Array<Card>
-    private var score: Int = 0
+    private(set) var cards: Array<Card>
 
     mutating func choose(_ card: Card) {
-        let setCards = visibleCards.filter{$0.isSet == true}
+        
+        let setCards = cards.filter{$0.isSet == true && $0.isDiscarded == false}
         if setCards.count > 0 {
             replaceCards(set: setCards)
         }
-        let badSetCards = visibleCards.filter{$0.isSet == false}
+        let badSetCards = cards.filter{$0.isSet == false}
         for card in badSetCards {
-            if let index = visibleCards.firstIndex(where:{$0.id == card.id}){
-                visibleCards[index].isSet = nil
+            if let index = cards.firstIndex(where:{$0.id == card.id}){
+                cards[index].isSet = nil
             }
         }
         
-        if let index = visibleCards.firstIndex(where:{$0.id == card.id}) {
-            visibleCards[index].isSelected.toggle()
+        if let index = cards.firstIndex(where:{$0.id == card.id}) {
+            cards[index].isSelected.toggle()
         }
-        let selectedCards = visibleCards.filter{$0.isSelected}
+        let selectedCards = cards.filter{$0.isSelected}
         if selectedCards.count == 3 {
             let _ = checkSet(selectedCards)
         }
@@ -50,44 +48,61 @@ struct SetGame {
         
         var foundSet = false
         for card in selections {
-            if let index = visibleCards.firstIndex(where:{$0.id == card.id}) {
+            if let index = cards.firstIndex(where:{$0.id == card.id}) {
                 if num && col && shp && shd {
-                    visibleCards[index].isSet = true
+                    cards[index].isDiscarded = true
+                    cards[index].isSet = true
                     foundSet = true
                 } else {
-                    visibleCards[index].isSet = false
+                    cards[index].isSet = false
                 }
-                visibleCards[index].isSelected = false
+                cards[index].isSelected = false
             }
         }
         return foundSet
     }
     
-    mutating func dealThreeCards() {
-        let setCards = visibleCards.filter{$0.isSet == true}
+    mutating func deal(cardId: Int) {
+        if let i = cards.firstIndex(where:{$0.id == cardId}) {
+            cards[i].isDealt = true
+        }
+    }
+    
+    mutating func flip(cardId: Int) {
+        if let i = cards.firstIndex(where:{$0.id == cardId}) {
+            cards[i].isFaceUp = true
+        }
+    }
+    
+    mutating func discard() {
+        let discards = cards.filter{$0.isDiscarded}
+        for card in discards {
+            if let i = cards.firstIndex(where:{$0.id == card.id}) {
+                cards[i].isSet = nil
+                cards[i].isSelected = false
+            }
+        }
+    }
+    
+    mutating func discardSet() {
+        let setCards = cards.filter{$0.isSet == true}
         if setCards.count > 0 {
             replaceCards(set: setCards)
-        } else {
-            for _ in 1...3 {
-                if remainingDeck.count > 0 {
-                    visibleCards.append(remainingDeck.removeFirst())
-                }
-            }
         }
     }
 
     mutating func replaceCards(set: [Card]) {
         for card in set {
-            if let index = visibleCards.firstIndex(where: {$0.id == card.id}) {
-                visibleCards.remove(at:index)
-                if remainingDeck.count > 0 {
-                    visibleCards.insert(remainingDeck.removeFirst(), at:index)
-                }
+            if let index = cards.firstIndex(where: {$0.id == card.id}) {
+                cards[index].isDiscarded = true
+                cards[index].isSet = nil
             }
         }
     }
     
     mutating func highlightSet() -> Bool {
+        let visibleCards = cards.filter{$0.isDealt == true && $0.isDiscarded == false}
+
         for card1 in visibleCards {
             for card2 in visibleCards {
                 for card3 in visibleCards {
@@ -95,14 +110,14 @@ struct SetGame {
                         if checkSet([card1, card2, card3]) {
                             return true
                         } else {
-                            if let index1 = visibleCards.firstIndex(where:{$0.id == card1.id}) {
-                                visibleCards[index1].isSet = nil
+                            if let index1 = cards.firstIndex(where:{$0.id == card1.id}) {
+                                cards[index1].isSet = nil
                             }
-                            if let index2 = visibleCards.firstIndex(where:{$0.id == card2.id}) {
-                                visibleCards[index2].isSet = nil
+                            if let index2 = cards.firstIndex(where:{$0.id == card2.id}) {
+                                cards[index2].isSet = nil
                             }
-                            if let index3 = visibleCards.firstIndex(where:{$0.id == card3.id}) {
-                                visibleCards[index3].isSet = nil
+                            if let index3 = cards.firstIndex(where:{$0.id == card3.id}) {
+                                cards[index3].isSet = nil
                             }
                         }
                     }
@@ -113,6 +128,7 @@ struct SetGame {
     }
     
     func canDealCards() -> Bool {
+        let remainingDeck = cards.filter{$0.isDealt == false}
         return !remainingDeck.isEmpty
     }
     
@@ -130,33 +146,35 @@ struct SetGame {
             }
         }
         cards.shuffle()
-        visibleCards = Array(cards[0..<12])
-        remainingDeck = Array(cards[12...])
     }
-    
-    struct Card: Identifiable {
+    struct Card: Identifiable, Equatable {
         let number: SetNumber
         let shape: SetShape
         let shading: SetShading
         let color: SetColor
         var isSelected = false
         var isSet: Bool?
+        var isDealt = false
+        var isDiscarded = false
+        var isFaceUp = false
         let id: Int
     }
-        
-    enum SetShape: CaseIterable{
-        case diamond, oval, rectangle 
-    }
-    
-    enum SetShading: CaseIterable {
-        case solid, open, striped
-    }
-    
-    enum SetColor: CaseIterable {
-        case red, green, purple
-    }
-    
-    enum SetNumber: CaseIterable {
-        case one, two, three
-    }
 }
+
+enum SetShape: CaseIterable{
+    case diamond, oval, rectangle
+}
+
+enum SetShading: CaseIterable {
+    case solid, open, striped
+}
+
+enum SetColor: CaseIterable {
+    case red, green, purple
+}
+
+enum SetNumber: CaseIterable {
+    case one, two, three
+}
+
+

@@ -10,8 +10,7 @@ import Foundation
 class SetGameViewModel : ObservableObject {
 
     @Published private var gameModel = SetGame()
-    var showNoSetsAlert = false
-
+    
     init() {
         newGame()
     }
@@ -25,21 +24,27 @@ class SetGameViewModel : ObservableObject {
         gameModel.choose(card)
     }
     
-    func dealThreeCards() {
-        gameModel.dealThreeCards()
+    func deal(cardId: Int) {
+        gameModel.deal(cardId: cardId)
     }
     
-    func cheat() {
-        if !gameModel.highlightSet() {
-            showNoSetsAlert = true
-        }
+    func flip(cardId: Int) {
+        gameModel.flip(cardId: cardId)
+    }
+    
+    func cheat() -> Bool {
+        return !gameModel.highlightSet()
     }
     
     func dealButtonEnabled() -> Bool {
         return gameModel.canDealCards()
     }
     
-    var cards: Array<SetGame.Card> {
-        return gameModel.visibleCards
+    func discard() {
+        gameModel.discard()
+    }
+    
+    var deck: Array<SetGame.Card> {
+        return gameModel.cards
     }
 }

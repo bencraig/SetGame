@@ -16,6 +16,7 @@
 		075F3EE72947EEF400631B16 /* SetGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075F3EE62947EEF400631B16 /* SetGame.swift */; };
 		075F3EE92947EFDC00631B16 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075F3EE82947EFDC00631B16 /* CardView.swift */; };
 		075F3EED2948C8D300631B16 /* AspectVGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075F3EEC2948C8D300631B16 /* AspectVGrid.swift */; };
+		07FA2252295678A9000643F0 /* Cardify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FA2251295678A9000643F0 /* Cardify.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		075F3EE62947EEF400631B16 /* SetGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGame.swift; sourceTree = "<group>"; };
 		075F3EE82947EFDC00631B16 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		075F3EEC2948C8D300631B16 /* AspectVGrid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AspectVGrid.swift; sourceTree = "<group>"; };
+		07FA2251295678A9000643F0 /* Cardify.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cardify.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 		075F3ED32947EC5E00631B16 /* SetGame */ = {
 			isa = PBXGroup;
 			children = (
+				07FA2251295678A9000643F0 /* Cardify.swift */,
 				075F3EEC2948C8D300631B16 /* AspectVGrid.swift */,
 				075F3ED42947EC5E00631B16 /* SetGameApp.swift */,
 				075F3EE82947EFDC00631B16 /* CardView.swift */,
@@ -154,6 +157,7 @@
 			files = (
 				075F3EED2948C8D300631B16 /* AspectVGrid.swift in Sources */,
 				075F3EE32947EE4E00631B16 /* Diamond.swift in Sources */,
+				07FA2252295678A9000643F0 /* Cardify.swift in Sources */,
 				075F3ED72947EC5E00631B16 /* SetGameView.swift in Sources */,
 				075F3EE72947EEF400631B16 /* SetGame.swift in Sources */,
 				075F3ED52947EC5E00631B16 /* SetGameApp.swift in Sources */,
