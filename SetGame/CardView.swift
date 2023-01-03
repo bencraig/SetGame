@@ -16,13 +16,13 @@ struct CardView: View {
                 let shape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
                 shape.fill().foregroundColor(.white)
                 shape.strokeBorder(lineWidth: getLineWidth())
-                    .padding(5).opacity(0.8).foregroundColor(borderColor())
+                    .padding(DrawingConstants.borderPadding).opacity(DrawingConstants.borderOpacity).foregroundColor(borderColor())
 
                 shapeDesign().padding(.all)
             }
             .cardify(isFaceUp: card.isFaceUp)
             .rotationEffect(Angle.degrees(card.isSet == true ? 360 : 0))
-            .rotationEffect(Angle.degrees(card.isSet == false ? 4 : 0))
+            .rotationEffect(Angle.degrees(card.isSet == false ? DrawingConstants.incorrectSkewAngle : 0))
         }
     }
     
@@ -111,6 +111,9 @@ struct CardView: View {
         static let lineWidth: CGFloat = 3.0
         static let setLineWidth: CGFloat = 5.0
         static let fontScale: CGFloat = 0.7
+        static let borderPadding = 5.0
+        static let borderOpacity = 0.8
+        static let incorrectSkewAngle = 4.0
     }
 }
 

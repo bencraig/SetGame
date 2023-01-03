@@ -24,7 +24,7 @@ struct SetGameView: View {
                 if !isUndealt(card) {
                     CardView(card: card)
                         .matchedGeometryEffect(id: card.id, in: dealingNamespace)
-                        .matchedGeometryEffect(id: card.id * 100, in: discardNamespace)
+                        .matchedGeometryEffect(id: card.id, in: discardNamespace)
                         .padding(4)
                         .transition(AnyTransition.asymmetric(insertion: .identity, removal: .scale))
                         .zIndex(zIndex(of: card))
@@ -35,14 +35,7 @@ struct SetGameView: View {
                                 game.choose(card)
                             }
                         }.onAppear() {
-                            var min = 2.0
-                            if dealCounter > 12 {
-                                min = -0.5
-                            }
-                            let dealt = game.deck.filter(isDealt)
-                            let index = dealt.firstIndex(of: card)
-                            let del = min + CardConstants.totalDealDuration * Double(index!) / Double(dealt.count)
-                            withAnimation(Animation.easeInOut(duration: 0.7).delay(del)){
+                            withAnimation(flipAnimation(for: card)){
                                 flip(card)
                             }
                         }
@@ -58,8 +51,8 @@ struct SetGameView: View {
                 deckBody
             }.padding(.horizontal)
         }.alert(isPresented: $showNoSetsAlert, content: {
-          Alert(title: Text("No sets on screen."), dismissButton: .default(Text("OK")) {
-          showNoSetsAlert = false
+          Alert(title: Text("No sets on screen"), dismissButton: .default(Text("OK")) {
+              showNoSetsAlert = false
           })
         })
     }
@@ -91,6 +84,17 @@ struct SetGameView: View {
         return Animation.easeInOut(duration: CardConstants.dealDuration).delay(delay)
     }
     
+    private func flipAnimation(for card: SetGame.Card) -> Animation {
+        var min = CardConstants.initDealFlipDelay
+        if dealCounter > CardConstants.initialDealCount {
+            min = CardConstants.successiveDealDelay
+        }
+        let dealt = game.deck.filter(isDealt)
+        let index = dealt.firstIndex(of: card)
+        let del = min + CardConstants.totalDealDuration * Double(index!) / Double(dealt.count)
+        return Animation.easeInOut(duration: CardConstants.flipDuration).delay(del)
+    }
+    
     private func zIndex(of card: SetGame.Card) -> Double {
         -Double(game.deck.firstIndex(where: {$0.id == card.id}) ?? 0)
     }
@@ -115,10 +119,10 @@ struct SetGameView: View {
             // "deal" cards
             var dealCards = 0
             if dealt.isEmpty {
-                dealCards = 12
+                dealCards = CardConstants.initialDealCount
             }
             else {
-                dealCards = 3
+                dealCards = CardConstants.successiveDealCount
             }
             for i in 1...dealCards {
                 if game.dealButtonEnabled() {
@@ -147,7 +151,7 @@ struct SetGameView: View {
         ZStack {
             ForEach(game.deck.filter(isDiscard)) { card in
                 CardView(card: card)
-                    .matchedGeometryEffect(id: card.id * 100, in: discardNamespace)
+                    .matchedGeometryEffect(id: card.id, in: discardNamespace)
                     .transition(AnyTransition.slide)
             }
         }
@@ -195,6 +199,11 @@ struct SetGameView: View {
         static let cardDealDelay: Double = 0.15
         static let undealtHeight: CGFloat = 90
         static let undealtWidth = undealtHeight * aspectRatio
+        static let initDealFlipDelay = 2.0
+        static let successiveDealDelay = -0.5
+        static let initialDealCount = 12
+        static let successiveDealCount = 3
+        static let flipDuration = 0.7
         static let cardColor = Color.teal
     }
     
